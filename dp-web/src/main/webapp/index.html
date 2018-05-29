@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>信息发布系统</title>
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+<link rel="stylesheet" href="statics/css/bootstrap.min.css">
+<link rel="stylesheet" href="statics/css/font-awesome.min.css">
+<link rel="stylesheet" href="statics/css/ionicons.min.css">
+<link rel="stylesheet" href="statics/css/style.min.css">
+<link rel="stylesheet" href="statics/css/AdminLTE.min.css">
+<link rel="stylesheet" href="statics/css/skins/skin-blue.min.css">
+<link rel="stylesheet" href="statics/css/common.min.css">
+<link rel="stylesheet" href="//at.alicdn.com/t/font_tnyc012u2rlwstt9.css" />
+
+<style>
+	#tp-weather-widget {
+		display: inline-block;
+		width: 100px !important;
+		height: 10px !important;
+
+	}
+</style>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+	<div class="wrapper" id="dpLTE" v-cloak>
+		<!--顶部头-->
+		<header class="main-header">
+			<!--logo区域-->
+            <div>
+                <a href="/index.html" class="logo">
+                    <!--<span class="logo-mini"><b>A</b>dms</span>-->
+                    <span class="logo-mini"><img src="statics/img/logo.png" style="width: 40px; height: 40px"></span>
+                    <span class="logo-lg">
+                        <b>信息</b>发布系统
+                        <img src="statics/img/logo.png" style="width: 40px; height: 40px">
+                    </span>
+                </a>
+            </div>
+
+			<!--导航条内容-->
+			<nav class="navbar navbar-static-top" role="navigation">
+				<a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+					<span class="sr-only">侧栏菜单切换按钮</span>
+				</a>
+
+				<!--导航条左边内容-->
+				<div class="navbar-custom-menu">
+					<ul class="nav navbar-nav">
+						<!--用户信息项-->
+						<li class="dropdown user user-menu">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<img src="statics/img/user.jpg" class="user-image" alt="">
+								<span class="hidden-xs">{{user.username}}</span>
+							</a>
+							<ul class="dropdown-menu">
+								<li class="user-header">
+									<img src="statics/img/user.jpg" class="img-circle">
+									<p>
+										{{user.username}} - WelCome
+									</p>
+								</li>
+								<!--用户信息主体-->
+								<li class="user-footer">
+									<div class="pull-left">
+										<a href="#" class="btn btn-info btn-flat" @click="updatePassword">修改密码</a>
+									</div>
+									<div class="pull-right">
+										<a href="#" class="btn btn-danger btn-flat" @click="logout">Sign out</a>
+									</div>
+								</li>
+							</ul>
+						</li>
+						<li @click="logout" ><a href="javascript:;"><i class="fa fa-sign-out"></i> &nbsp;退出系统</a></li>
+					</ul>
+					<div id="tp-weather-widget"></div>
+				</div>
+			</nav>
+		</header>
+
+		<!--侧拉菜单-->
+		<aside class="main-sidebar">
+			<section class="sidebar">
+				<!--用户面板-->
+				<div class="user-panel">
+					<div class="pull-left image">
+						<img src="statics/img/user.jpg" class="img-circle">
+					</div>
+					<div class="pull-right info">
+						<p>{{user.username}}</p>
+						<a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+					</div>
+				</div>
+				<!--菜单主体-->
+				<ul class="sidebar-menu" data-widget="tree">
+					<li class="header">导航菜单</li>
+					<!--菜单项-->
+					<menu-item v-for="item in menuList" :item="item"></menu-item>
+				</ul>
+			</section>
+		</aside>
+
+		<!-- 路径导航 -->
+		<div class="content-wrapper">
+			<!--中间内容头-->
+			<section class="content-header">
+				<ol class="breadcrumb" id="nav_title"
+					style="position: static; float: none;">
+					<li class="active">
+						<i class="fa fa-home" style="font-size: 20px; position: relative; top: 2px; left: -3px;"></i>
+						&nbsp; 首页</li>
+					<li class="active">{{navTitle}}</li>
+				</ol>
+			</section>
+			<!-- 内容主体 -->
+			<section class="content container-fluid" style="background: #fff;">
+				<iframe scrolling="yes" frameborder="0"
+						style="width: 100%; height: 780px; overflow: visible;"
+						:src="main" id="main" name="main" :data-url="main"></iframe>
+			</section>
+		</div>
+
+		<footer class="main-footer">
+			<!-- 左浮动对齐 -->
+			<div class="pull-right hidden-xs">
+				Anything you want
+			</div>
+			<!-- Default to the left -->
+			<strong>Copyright &copy; 2017 <a href="#">SZHC</a>.</strong> All rights reserved.
+		</footer>
+
+		<div class="control-sidebar-bg"></div>
+
+		<!-- 修改密码 -->
+		<div id="passwordLayer" class="container-fluid" style="display: none;">
+			<table class="form">
+				<tr>
+					<td class="formTitle">账号</td>
+					<td class="formValue"><span class="label label-success"
+						style="vertical-align: bottom;">{{user.username}}</span></td>
+				</tr>
+				<tr>
+					<td class="formTitle">原密码</td>
+					<td class="formValue"><input type="password"
+						class="form-control" v-model="pswd" placeholder="原密码" /></td>
+				</tr>
+				<tr>
+					<td class="formTitle">新密码<font face="宋体">*</font></td>
+					<td class="formValue"><input type="text" class="form-control"
+						v-model="newPswd" placeholder="新密码" /></td>
+				</tr>
+			</table>
+		</div>
+
+	</div>
+
+	<script src="statics/libs/jquery.min.js"></script>
+	<script src="statics/libs/vue.min.js"></script>
+	<script src="statics/libs/router.js"></script>
+	<script src="statics/libs/adminlte.min.js"></script>
+	<script src="statics/libs/bootstrap.min.js"></script>
+	<!--<script src="statics/libs/jquery.slimscroll.min.js"></script>-->
+	<script src="statics/plugins/layer/layer.js"></script>
+	<script src="statics/js/common.js"></script>
+	<script src="statics/js/index.js"></script>
+	<script>(function(T,h,i,n,k,P,a,g,e){g=function(){P=h.createElement(i);a=h.getElementsByTagName(i)[0];P.src=k;P.charset="utf-8";P.async=1;a.parentNode.insertBefore(P,a)};T["ThinkPageWeatherWidgetObject"]=n;T[n]||(T[n]=function(){(T[n].q=T[n].q||[]).push(arguments)});T[n].l=+new Date();if(T.attachEvent){T.attachEvent("onload",g)}else{T.addEventListener("load",g,false)}}(window,document,"script","tpwidget","//widget.seniverse.com/widget/chameleon.js"))</script>
+	<script>tpwidget("init", {
+        "flavor": "slim",
+        "location": "WX4FBXXFKE4F",
+        "geolocation": "enabled",
+        "language": "zh-chs",
+        "unit": "c",
+        "theme": "chameleon",
+        "container": "tp-weather-widget",
+        "bubble": "disabled",
+        "alarmType": "badge",
+        "color": "#FFFFFF",
+        "uid": "U9EC08A15F",
+        "hash": "039da28f5581f4bcb5c799fb4cdfb673"
+    });
+    tpwidget("show");</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    #parse("include/header.html")
+</head>
+<body>
+    <div id="app" class="container-fluid">
+        <ul id="classifyTree" class="ztree"></ul>
+    </div>
+
+    #parse("include/footer.html")
+    <script>
+        var setting = {
+            data : {
+                simpleData : {
+                    enable : true,
+                    idKey : "classifyId",
+                    pIdKey : "parentId",
+                    rootPId : "-1"
+            },
+                key : {
+                    url : "nourl"
+                }
+            }
+        };
+
+        var ztree;
+
+        var vm = new Vue({
+            el : "#app",
+            data : {
+                parentId: 0
+            },
+            methods : {
+                getClassifyTree : function (parentId) {
+                    $.get("/manage/terminalClassify/list?_" + $.now(), function (r) {
+                        if (r.code == '0') {
+                            ztree = $.fn.zTree.init($("#classifyTree"), setting, r.rows);
+                        } else {
+                            dialogAlert(r.msg, 'error');
+                        }
+                    })
+                },
+                acceptClick: function () {
+                    var node = ztree.getSelectedNodes();
+                    top.layerForm.vm.classify.parentId = node[0].classifyId;
+                    top.layerForm.vm.classify.parentName = node[0].name;
+                    dialogClose(); // 关闭当前iframe
+                }
+            },
+            created : function() {
+                this.getClassifyTree(this.parentId);
+            }
+        });
+    </script>
+</body>
+</html>

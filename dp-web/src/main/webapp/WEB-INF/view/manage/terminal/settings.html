@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>终端设置</title>
+
+    #parse("include/header.html")
+<body>
+</head>
+<div id="settings">
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#activity" data-toggle="tab">定时关开机设置</a></li>
+            <li><a href="#timeline" data-toggle="tab">终端系统级设置</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="active tab-pane" id="activity">
+                <h1>终端定时关开机设置</h1>
+                <table class="form" id="form">
+                    <!--<tr>-->
+                        <!--<td class="formTitle">开机日期<font face="宋体">*</font></td>-->
+                        <!--<td class="formValue">-->
+                            <!--<input id="dateOn" v-model="params.dateOn" type="text" class="form-control" placeholder="请选择开机日期" readonly="readonly">-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <tr>
+                        <td class="formTitle">关开机时间<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <input id="timeOn" v-model="showDate" type="text" class="form-control" placeholder="请选择关开机时间" readonly="readonly">
+                        </td>
+                    </tr>
+                    <!--<tr>-->
+                        <!--<td class="formTitle">关机日期<font face="宋体">*</font></td>-->
+                        <!--<td class="formValue">-->
+                            <!--<input id="dateOff" v-model="params.dateOff" type="text" class="form-control" placeholder="节目选择关机日期" readonly="readonly">-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td class="formTitle">关机时间<font face="宋体">*</font></td>-->
+                        <!--<td class="formValue">-->
+                            <!--<input id="timeOff" v-model="params.timeOff" type="text" class="form-control" placeholder="节目选择关机时间" readonly="readonly">-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <tr>
+                        <td class="formTitle"></td>
+                        <td class="formValue">
+                            <a type="button" class="btn btn-info" @click="use">应用</a>
+                            <a type="button" class="btn btn-danger" @click="cancel">取消定时</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="tab-pane" id="timeline">
+                <h1>终端系统级设置</h1>
+                <table class="form" id="form2">
+                    <tr>
+                        <td class="formTitle">导航栏显示<font face="宋体">*</font></td>
+
+                        <td class="formValue">
+                            <a type="button" class="btn btn-default" @click="menuShow">显示</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="formTitle">导航栏隐藏<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <a type="button" class="btn btn-default" @click="menuHide">隐藏</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="formTitle">背光开关<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <a type="button" class="btn btn-default" @click="backlightOn">背光启动</a>
+                            <a type="button" class="btn btn-default" @click="backlightOff">背光关闭</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="formTitle">音量设置<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <select class="form-control pointer" v-model="volume" >
+                                <option value="0">0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                            </select>
+                        </td>
+                        <td class="formValue">
+                            <a type="button" class="btn btn-default" @click="setVolume">设置</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="formTitle">重置系统<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <a type="button" class="btn btn-default" @click="reset">重置</a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="box1" style="display:none">
+    <input v-model="operationPassword" type="text" class="form-control" placeholder="请输入操作密码">
+</div>
+#parse("include/footer.html")
+<script src="${rc.contextPath}/statics/plugins/laydate/laydate.js"></script>
+<script src="${rc.contextPath}/statics/js/manage/terminal/settings.js"></script>
+</body>
+</html>

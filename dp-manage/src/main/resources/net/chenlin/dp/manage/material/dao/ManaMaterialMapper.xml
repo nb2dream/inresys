@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.manage.material.dao.ManaMaterialMapper">
+
+    <resultMap id="MaterialResultMap" type="net.chenlin.dp.manage.material.dto.ManaMaterialDTO">
+        <id column="id" property="id" />
+        <!--column 表字段名 property 类字段名-->
+        <result column="content" property="content"/>
+        <result column="material_name" property="materialName"/>
+        <result column="path" property="path"/>
+        <result column="suffix" property="suffix"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="classify_id" property="classifyId"/>
+        <result column="type" property="type"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="classify_name" property="classifyName"/>
+        <result column="create_user_name" property="createUserName"/>
+    </resultMap>
+
+    <select id="listForPage" resultMap="MaterialResultMap">
+        select
+            m.id,
+            m.content,
+            m.material_name,
+            m.path,
+            m.suffix,
+            m.type,
+            m.gmt_create,
+            m.file_size,
+            c.name AS classifyName,
+            u.username AS create_user_name
+        from
+            mana_material m
+        left join
+            mana_classify c
+        on
+            c.classify_id = m.classify_id
+        left join
+            sys_user u
+        ON
+            m.create_user_id = u.user_id
+        <where>
+            <if test="createUserId != null">
+                AND m.create_user_id = #{createUserId}
+            </if>
+            <if test="type != null and type != 0">
+                AND m.type = #{type}
+            </if>
+            <if test="classifyId != null">
+                AND m.classify_id = #{classifyId}
+            </if>
+            <if test="name != null and name.trim() != '' ">
+                AND m.material_name LIKE concat('%',#{name},'%')
+                OR m.id LIKE concat('%',#{name},'%')
+                OR c.name LIKE concat('%',#{name},'%')
+            </if>
+        </where>
+        ORDER BY
+          m.id DESC
+    </select>
+
+    <delete id="batchRemove">
+        DELETE
+        FROM
+            mana_material
+        WHERE
+            id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="listSelectMaterialByPage" resultMap="MaterialResultMap">
+        SELECT
+            m.id,
+            m.content,
+            m.material_name,
+            m.path,
+            m.suffix,
+            m.type,
+            m.gmt_create,
+            m.file_size,
+            c.name AS classifyName,
+            u.username AS create_user_name
+        FROM
+            mana_material m
+        LEFT JOIN
+            mana_classify c
+        ON
+            c.classify_id = m.classify_id
+        LEFT JOIN
+            sys_user u
+        ON
+            m.create_user_id = u.user_id
+        WHERE
+            m.id NOT IN (
+                SELECT
+                    pm.material_id
+                FROM
+                    mana_program_material pm
+                WHERE
+                    pm.item_id = #{itemId}
+                AND
+                    pm.program_id = #{programId}
+            )
+            <if test="createUserId != null">
+                AND m.create_user_id = #{createUserId}
+            </if>
+            <if test="type != null and type != 0">
+                AND m.type = #{type}
+            </if>
+            <if test="classifyId != null">
+                AND m.classify_id = #{classifyId}
+            </if>
+            <if test="name != null and name.trim() != '' ">
+                AND m.material_name LIKE concat('%',#{name},'%')
+                OR m.id LIKE concat('%',#{name},'%')
+                OR c.name LIKE concat('%',#{name},'%')
+            </if>
+        ORDER BY
+            m.id DESC
+    </select>
+
+    <insert id="save">
+        INSERT INTO mana_material (
+            content,
+            material_name,
+            path,
+            suffix,
+            type,
+            file_size,
+            classify_id,
+            create_user_id,
+            gmt_create
+        )
+        VALUE (
+            #{content},
+            #{materialName},
+            #{path},
+            #{suffix},
+            #{type},
+            #{fileSize},
+            #{classifyId},
+            #{createUserId},
+            NOW()
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE mana_material
+        <set>
+            <if test="content != null">content = #{content},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="path != null">path = #{path},</if>
+            <if test="classifyId != null">classify_id = #{classifyId},</if>
+            <if test="suffix != null">suffix = #{suffix},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            gmt_modified = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="getObjectById" resultMap="MaterialResultMap">
+        SELECT
+            m.id,
+            m.content,
+            m.material_name,
+            m.path,
+            m.suffix,
+            m.type,
+            m.gmt_create,
+            m.classify_id,
+            m.file_size,
+            cla.name as classify_name
+        FROM
+            mana_material m
+        LEFT JOIN
+            mana_classify cla
+        ON
+            m.classify_id = cla.classify_id
+        WHERE
+            m.id = #{id}
+
+    </select>
+
+</mapper>

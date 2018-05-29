@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>插入素材</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="${rc.contextPath}/statics/plugins/gridstack/bootstrap.min.css">
+    <link rel="stylesheet" href="${rc.contextPath}/statics/plugins/gridstack/gridstack.css"/>
+    <link rel="stylesheet" href="${rc.contextPath}/statics/plugins/gridstack/gridstack-extra.css"/>
+
+
+    <script src="${rc.contextPath}/statics/plugins/gridstack/jquery.min.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/jquery-ui.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/bootstrap.min.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/lodash.min.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/gridstack.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/gridstack.jQueryUI.js"></script>
+
+    <script src="${rc.contextPath}/statics/libs/jquery.blockUI.js"></script>
+
+    <style type="text/css">
+        .main-container{
+            background: lightgoldenrodyellow;
+            border-style:inset;
+        }
+        .grid-stack {
+            background: lightgoldenrodyellow;
+        }
+
+        .grid-image {
+            color: #fff;
+            text-align: center;
+            background-color: #ff9966;
+        }
+        .grid-video {
+            color: #fff;
+            text-align: center;
+            background-color: #996600;
+        }
+        .grid-audio {
+            color: #fff;
+            text-align: center;
+            background-color: #009999;
+        }
+        .grid-text {
+            color: #fff;
+            text-align: center;
+            background-color: #cccc00;
+        }
+        .grid-url {
+            color: #fff;
+            text-align: center;
+            background-color: #666633;
+        }
+
+        .grid-clock {
+            color: #fff;
+            text-align: center;
+            background-color: #5DFDCB;
+        }
+
+        .grid-stack-item-content {
+            color: #fff;
+            text-align: center;
+        }
+
+        .grid-stack-item-content:hover  {
+            border: 1px outset #fff;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="jq22-container">
+        <div class="jq22-content bgcolor-3">
+            <div class="container-fluid">
+                <div style="margin:5px 0px;font-weight: bold;">
+                    请双击需要插入素材的区域，管理和插入素材。
+                </div>
+                <div class="main-container" :style="{ width : ($!{program.width}/2 + 5) + 'px', height : ($!{program.height}/2) + 'px'}">
+                    <div class="grid-stack">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <script src="${rc.contextPath}/statics/libs/vue.min.js"></script>
+    <script src="${rc.contextPath}/statics/js/common.js"></script>
+    <script src="${rc.contextPath}/statics/js/form.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/layer/layer.js"></script>
+
+    <script src="${rc.contextPath}/statics/js/manage/program/material.js?_${date.systemTime}"></script>
+
+    <script>
+        var vm  = new Vue({
+            el: '#list',
+            data: {
+                itemId: null,
+                programId: $!{program.id},
+                type: null,
+                params: {
+
+                }
+            },
+            methods: {
+                toProgramMaterialList: function () {
+                    dialogOpen({
+                        title : "插入素材 (区域编号："+ vm.itemId +"）",
+                        url : "/manage/program/list_program_material.html",
+                        width : "1200px",
+                        height : "600px",
+                        success : function(iframeId) {
+//                            // 节目id + itemId 是节目查询条件
+                            top.frames[iframeId].vm.params.programId = vm.programId;  // 把节目id传过去
+                            top.frames[iframeId].vm.params.itemId = vm.itemId;      // 素材位置id传过去
+                            top.frames[iframeId].vm.params.type = vm.type;      // 素材类型
+                            top.frames[iframeId].vm.load();
+                        },
+                        yes : function (iframeId) {
+                            top.layer.closeAll();
+                            dialogMsg("操作成功", common.msgType.SUCCESS);
+                        }
+                    })
+                }
+            }
+        })
+    </script>
+    <script type="text/javascript">
+    $(function () {
+        // 原先是 32:18  18:32 现缩小2倍
+        var max_width = $!{program.width} / (60*2);    // 算出节目比例
+        var max_height = $!{program.height} / (60*2);
+
+        var options = {
+            disableDrag:true,
+            disableResize:true,
+            verticalMargin: 0,
+            float: true,
+            width:max_width,
+            height:max_height
+        };
+        $('.grid-stack').gridstack(options);
+
+        new function () {
+            #if($program.items)
+                this.serialized_data = $program.items;
+            #else
+            this.serialized_data = [];
+            #end
+
+            this.grid = $('.grid-stack').data('gridstack');
+
+            this.load_grid = function () {
+                this.grid.removeAll();
+                var items = GridStackUI.Utils.sort(this.serialized_data);
+                _.each(items, function (node) {
+
+                    node.x = node.x/2;
+                    node.y = node.y/2;
+                    node.width = node.width/2;
+                    node.height = node.height/2;
+
+                    itemId = node.id.substring(node.id.indexOf("-")+1);  //XF_debug
+                    if(node.id.indexOf("image")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-image">图片</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("video")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-video" >视频</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("audio")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-audio" >音频</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("text")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-text" >文字</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("url")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-url" >网页</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("clock")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-clock" >时钟</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    }
+
+                }, this);
+            }.bind(this);
+            this.load_grid();
+
+            $(".grid-stack-item-content").dblclick(function(){
+                itemId = $(this).parent().attr("data-gs-id");
+                type = 0;
+                //1:图片，2:视频，3:音频，4:文字,5:网址
+                if(itemId.indexOf("image")>-1){
+                    type = 1;
+                } else if(itemId.indexOf("video")>-1){
+                    type = 2;
+                } else if(itemId.indexOf("audio")>-1){
+                    type = 3;
+                } else if(itemId.indexOf("text")>-1){
+                    type = 4;
+                } else if(itemId.indexOf("url")>-1){
+                    type = 5;
+                } else if(itemId.indexOf("clock")>-1){
+                    return;
+                }
+                vm.itemId = itemId;
+                vm.type = type;
+                vm.toProgramMaterialList();
+//                    openFullscreen("插入素材 (区域编号："+itemId+"）","toProgramMaterialList.do?id=${program.id}&itemId="+itemId+"&matType="+type);
+            });
+            // this.grid.remove_all();
+        };
+    });
+    </script>
+
+</body>
+</html>

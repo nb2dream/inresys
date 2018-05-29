@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑素材</title>
+
+    #parse("include/header.html")
+<body>
+</head>
+<div id="edit" class="container-fluid">
+    <table class="form" id="form">
+        <!--<tr>-->
+            <!--<td class="formTitle">素材名称<font face="宋体">*</font></td>-->
+            <!--<td class="formValue">-->
+                <!--<input v-model="material.materialName" type="text"  class="form-control" placeholder="素材名"  isvalid="yes"  checkexpession="LenStr" length="18">-->
+            <!--</td>-->
+        <!--</tr>-->
+        <tr>
+            <td class="formTitle">素材名：<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input v-model="material.materialName" type="text" name="materialName"  class="form-control pointer" checkexpession="NotNull" isvalid="yes" checkexpession="LenStr" length="18" placeholder="素材名称">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">所属素材分组<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input v-model="material.classifyName" type="text" class="form-control pointer"   isvalid="yes" checkexpession="NotNull"  @click="classifyTree()" readonly="readonly" placeholder="素材分组">
+                <input v-model="material.classifyId" type="hidden" class="form-control pointer"  name="classifyId">
+            </td>
+        </tr>
+        <tr v-if="material.type == 5">
+            <td class="formTitle">网址：<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input v-model="material.content" type="text" name="content"  class="form-control pointer" checkexpession="Uri"   isvalid="yes" checkexpession="Uri" placeholder="http://">
+            </td>
+        </tr>
+        <tr v-if="material.type == 4">
+            <td class="formTitle">文字内容：<font face="宋体">*</font></td>
+            <td class="formValue">
+                <!--<input type="text" name="materialName"  class="form-control pointer" checkexpession="NotNull"  @click="" isvalid="yes" checkexpession="LenStr" length="12" placeholder="素材名称">-->
+                <textarea v-model="material.content" class="form-control" rows="3" name="content"></textarea>
+            </td>
+        </tr>
+        <tr v-if="material.type == 4">
+            <td class="formTitle">参数设置:<font face="宋体">*</font></td>
+            <td class="formValue">
+                字体大小: <input v-model="material.fontSize" type="number" value="60" name="fontSize">
+            </td>
+        </tr>
+    </table>
+</div>
+#parse("include/footer.html")
+<script src="${rc.contextPath}/statics/js/manage/material/edit.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>节目下发</title>
+
+    #parse("include/header.html")
+<body>
+</head>
+<div id="push" class="container-fluid">
+    <table class="form" id="form">
+        <tr>
+            <td class="formTitle">终端编号<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" v-model="params.terminalIds"  readonly="readonly" class="form-control"  isvalid="yes" checkexpession="LenStr" length="44">
+            </td>
+        </tr>
+        <tr>
+        <tr>
+            <td class="formTitle">选择节目单<font face="宋体">*</font></td>
+            <td class="formValue">
+                <select class="form-control pointer" v-model="params.programTaskId" name="type">
+                    <option value=0>--请选择节目单--</option>
+                    <!--<option v-for="item in programTaskList" value="{{item.id}}" @click="taskVersion = item.gmtModified">{{item.taskName}}</option>-->
+                    <option v-for="item in programTaskList" :value="item.id" @click="taskVersion = item.gmtModified">{{item.taskName}}</option>
+                </select>
+            </td>
+        </tr>
+        </tr>
+        <!--<tr>-->
+            <!--<td class="formTitle">节目单版本<font face="宋体">*</font></td>-->
+            <!--<td class="formValue">-->
+                <!--<input type="text" v-model="taskVersion"  class="form-control" readonly="readonly" placeholder="节目单版本" >-->
+            <!--</td>-->
+        <!--</tr>-->
+    </table>
+</div>
+#parse("include/footer.html")
+<script src="${rc.contextPath}/statics/js/manage/terminal/task_push.js"></script>
+</body>
+</html>

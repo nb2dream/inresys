@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.manage.terminal.dao.ManaDevicesMapper">
+
+    <insert id="save">
+        INSERT INTO mana_devices (
+            device_id,
+            device_token,
+            gmt_create
+        )
+        VALUE (
+            #{deviceId},
+            #{deviceToken},
+            NOW()
+        )
+    </insert>
+
+    <update id="updateByDeviceId">
+        UPDATE mana_devices
+        <set>
+            <if test="deviceToken != null" >device_token = #{deviceToken},</if>
+            gmt_modified = NOW()
+        </set>
+        WHERE device_id = #{deviceId}
+    </update>
+
+    <update id="update">
+        UPDATE mana_devices
+        <set>
+            <if test="deviceToken != null" >device_token = #{deviceToken},</if>
+            gmt_modified = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="getDeviceByDeviceId" resultType="net.chenlin.dp.manage.terminal.dto.ManaDevicesDTO">
+      SELECT
+          mana_devices.id,
+          mana_devices.device_id,
+          mana_devices.device_token,
+          mana_devices.gmt_create,
+          mana_devices.gmt_modified
+      FROM
+          mana_devices
+      WHERE
+          mana_devices.device_id = #{deviceId}
+    </select>
+
+    <select id="getCityCodeByName" parameterType="String" resultType="String">
+        select city_code from tbl_city  where city_name = #{cityName}
+    </select>
+
+</mapper>

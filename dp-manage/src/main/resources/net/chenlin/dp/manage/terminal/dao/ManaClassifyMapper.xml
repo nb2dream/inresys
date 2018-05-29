@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.manage.terminal.dao.ManaClassifyMapper">
+
+    <select id="listClassify" resultType="ManaClassifyEntity">
+        SELECT
+            c.classify_id,
+            c.parent_id,
+            c.name,
+            c.order_num,
+            c.remark,
+            (
+                SELECT
+                  count(*)
+                FROM
+                  mana_classify p
+                WHERE
+                  p.parent_id = c.classify_id
+            ) AS size
+        FROM
+            mana_classify c
+            <where>
+                <if test="parentId != null">
+                    AND c.parent_id = #{parentId}
+                </if>
+                <if test="type != null">
+                    AND c.type = #{type}
+                </if>
+                <if test="createUserId != null">
+                    AND c.create_user_id = #{createUserId}
+                </if>
+            </where>
+        ORDER BY
+          c.order_num ASC
+    </select>
+
+    <select id="listClassifyByParentId" resultType="ManaClassifyEntity">
+        SELECT
+            c.classify_id,
+            c.parent_id,
+            c.name,
+            c.order_num,
+            c.remark,
+            (
+                SELECT
+                    count(*)
+                FROM
+                    mana_classify p
+                WHERE
+                    p.parent_id = c.classify_id
+            ) AS size
+        FROM
+            mana_classify c
+        WHERE
+            c.parent_id = #{parentId}
+        <if test="type != null">
+            AND c.type = #{type}
+        </if>
+        <if test="createUserId != null">
+            AND c.create_user_id = #{createUserId}
+        </if>
+        ORDER BY
+            c.order_num ASC
+    </select>
+
+    <select id="listClassifyNotParentId" resultType="ManaClassifyEntity">
+        SELECT
+            c.classify_id,
+            c.parent_id,
+            c.name,
+            c.order_num,
+            c.remark,
+            (
+                SELECT
+                count(*)
+                FROM
+                mana_classify p
+                WHERE
+                p.parent_id = c.classify_id
+            ) AS size
+        FROM
+            mana_classify c
+        <if test="type != null">
+            AND c.type = #{type}
+        </if>
+        <if test="createUserId != null">
+            AND c.create_user_id = #{createUserId}
+        </if>
+        ORDER BY
+            c.order_num ASC
+    </select>
+
+    <insert id="save">
+        INSERT INTO mana_classify (
+            parent_id,
+            name,
+            order_num,
+            type,
+            remark,
+            parent_name,
+            create_user_id,
+            gmt_create
+        )
+        VALUE (
+            #{parentId},
+            #{name},
+            #{orderNum},
+            #{type},
+            #{remark},
+            #{parentName},
+            #{createUserId},
+            NOW()
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE mana_classify
+        <set>
+            <if test="parentId != null" >parent_id = #{parentId},</if>
+            <if test="parentName != null" >parent_name = #{parentName},</if>
+            <if test="name != null" >name = #{name},</if>
+            <if test="orderNum != null" >order_num = #{orderNum},</if>
+            <if test="remark != null" >remark = #{remark},</if>
+            gmt_modified = NOW()
+        </set>
+        WHERE classify_id = #{classifyId}
+    </update>
+
+    <select id="getObjectById" resultType="ManaClassifyEntity">
+        SELECT
+            classify_id,
+            parent_id,
+            parent_name,
+            name,
+            order_num,
+            remark
+        FROM
+            mana_classify
+        WHERE
+            classify_id = #{id}
+    </select>
+
+    <select id="countClassifyChildren" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            mana_classify
+        WHERE
+            parent_id = #{classifyId}
+    </select>
+
+    <delete id="remove">
+        DELETE
+        FROM
+            mana_classify
+        WHERE
+            classify_id = #{id}
+    </delete>
+
+</mapper>

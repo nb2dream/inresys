@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.manage.program.dao.ManaProgramMapper">
+
+    <resultMap id="ProgramResultMap" type="net.chenlin.dp.manage.program.dto.ManaProgramDTO">
+        <id column="id" property="id" />
+        <!--column 表字段名 property 类字段名-->
+        <result column="name" property="name"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="width" property="width"/>
+        <result column="height" property="height"/>
+        <result column="description" property="description"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="items" property="items"/>
+        <result column="create_user_name" property="createUserName"/>
+    </resultMap>
+
+    <select id="listForPage" resultMap="ProgramResultMap">
+        SELECT
+            m.id,
+            m.name,
+            m.create_user_id,
+            m.width,
+            m.height,
+            m.description,
+            m.items,
+            m.ratio,
+            m.gmt_create,
+            m.gmt_modified,
+            u.username AS create_user_name
+        FROM
+            mana_program m
+        LEFT JOIN
+            sys_user u
+        ON
+            m.create_user_id = u.user_id
+        <where>
+            <if test="createUserId != null">
+                AND m.create_user_id = #{createUserId}
+            </if>
+            <if test="name != null and name.trim() != '' ">
+                AND m.name LIKE concat('%',#{name},'%')
+                OR m.id LIKE concat('%',#{name},'%')
+                OR u.username LIKE concat('%',#{name},'%')
+            </if>
+        </where>
+        ORDER BY
+            m.id DESC
+    </select>
+
+    <select id="getObjectById" resultMap="ProgramResultMap">
+        SELECT
+            m.id,
+            m.name,
+            m.create_user_id,
+            m.width,
+            m.height,
+            m.description,
+            m.items,
+            m.ratio,
+            m.gmt_create,
+            m.gmt_modified,
+            u.username AS create_user_name
+        FROM
+            mana_program m
+        LEFT JOIN
+            sys_user u
+        ON
+            m.create_user_id = u.user_id
+        WHERE
+            m.id = #{id}
+    </select>
+
+    <insert id="save">
+        INSERT INTO mana_program (
+            name,
+            create_user_id,
+            width,
+            height,
+            description,
+            ratio,
+            gmt_create
+        )
+        VALUE (
+            #{name},
+            #{createUserId},
+            #{width},
+            #{height},
+            #{description},
+            #{ratio},
+            NOW()
+        )
+    </insert>
+
+    <delete id="batchRemove">
+        DELETE
+        FROM
+          mana_program
+        WHERE
+          id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="update">
+        UPDATE mana_program
+        <set>
+            <if test="name != null" >name = #{name},</if>
+            <if test="width != null" >width = #{width},</if>
+            <if test="height != null" >height = #{height},</if>
+            <if test="description != null" >description = #{description},</if>
+            <if test="items != null" >items = #{items},</if>
+            <if test="ratio != null" >ratio = #{ratio},</if>
+            gmt_modified = NOW()
+        </set>
+        WHERE id = #{id}
+        <if test="createUserId != null">
+            AND create_user_id = #{createUserId}
+        </if>
+    </update>
+
+    <select id="listSelectProgramByPage" resultMap="ProgramResultMap">
+        SELECT
+            m.id,
+            m.name,
+            m.create_user_id,
+            m.width,
+            m.height,
+            m.description,
+            m.ratio,
+            m.gmt_create
+        FROM
+            mana_program m
+        WHERE
+            m.id NOT IN (
+                SELECT
+                    pt.program_id
+                FROM
+                    mana_program_programtask_relation pt
+                WHERE
+                    pt.task_id= #{taskId}
+            )
+        AND
+            create_user_id = #{createUserId}
+        <if test="name != null and name.trim() != '' ">
+            AND m.name LIKE concat('%',#{name},'%')
+        </if>
+        <if test="width != null">
+            AND m.width = #{width}
+        </if>
+        <if test="height">
+            AND m.height = #{height}
+        </if>
+        <if test="ratio">
+            AND m.ratio = #{ratio}
+        </if>
+        ORDER BY
+            m.id DESC
+    </select>
+
+
+</mapper>

@@ -1,0 +1,5 @@
+base.sql 为基础的数据库表结构
+
+base_data.sql  为数据库初始化数据
+
+base_quartz.sql  为quartz 模块的数据库表结构

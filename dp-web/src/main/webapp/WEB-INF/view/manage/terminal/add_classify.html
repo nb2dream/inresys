@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加分组</title>
+
+    #parse("include/header.html")
+<body>
+</head>
+<div id="add" class="container-fluid">
+    <table class="form" id="form">
+        <tr>
+            <td class="formTitle">分组名<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" v-model="classify.name" class="form-control" placeholder="分组名"  isvalid="yes" checkexpession="LenStr" length="8">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">排序<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" v-model="classify.orderNum" class="form-control" placeholder="0"  isvalid="yes" checkexpession="LenNum" length="3">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">上级分组<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text"  class="form-control pointer"  isvalid="no" checkexpession="NotNull" readonly="readonly" v-model="classify.parentName"  @click="classifyTree"  placeholder="根目录">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">备注<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text"  v-model="classify.remark" class="form-control" placeholder="分组描述"  isvalid="yes" checkexpession="LenStrOrNull" length="15">
+            </td>
+        </tr>
+    </table>
+</div>
+#parse("include/footer.html")
+
+<script src="${rc.contextPath}/statics/js/manage/terminal/add_classify.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>节目布局-测试</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="${rc.contextPath}/statics/plugins/gridstack/bootstrap.min.css">
+    <link rel="stylesheet" href="${rc.contextPath}/statics/plugins/gridstack/gridstack.css"/>
+    <link rel="stylesheet" href="${rc.contextPath}/statics/plugins/gridstack/gridstack-extra.css"/>
+
+
+    <script src="${rc.contextPath}/statics/plugins/gridstack/jquery.min.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/jquery-ui.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/bootstrap.min.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/lodash.min.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/gridstack.js"></script>
+    <script src="${rc.contextPath}/statics/plugins/gridstack/gridstack.jQueryUI.js"></script>
+
+    <script src="${rc.contextPath}/statics/libs/jquery.blockUI.js"></script>
+
+    <style type="text/css">
+        .main-container{
+            background: lightgoldenrodyellow;
+            border-style:inset;
+            /*width: 540.2px;
+            height: 300px;*/
+        }
+        .grid-stack {
+            background: lightgoldenrodyellow;
+        }
+
+        .grid-image {
+            color: #fff;
+            text-align: center;
+            background-color: #ff9966;
+        }
+        .grid-video {
+            color: #fff;
+            text-align: center;
+            background-color: #996600;
+        }
+        .grid-audio {
+            color: #fff;
+            text-align: center;
+            background-color: #009999;
+        }
+        .grid-text {
+            color: #fff;
+            text-align: center;
+            background-color: #333300;
+        }
+        .grid-url {
+            color: #fff;
+            text-align: center;
+            background-color: #666633;
+        }
+
+        .grid-clock {
+            color: #fff;
+            text-align: center;
+            background-color: #5DFDCB;
+        }
+
+        .grid-stack-item-content {
+            color: #fff;
+            text-align: center;
+        }
+        table tr td{
+            padding:0px 10px;
+        }
+        table tr td input{
+            color:red;
+            width:70px;
+        }
+        table tr td span {
+            color:red;
+            font-size:10px;
+        }
+
+    </style>
+
+</head>
+<body>
+<div class="jq22-container">
+    <div class="jq22-content bgcolor-3">
+        <div class="container-fluid">
+            <div style="margin:10px; height: 60px;">
+
+                <div style="float:left;">
+                    <a class="btn btn-default" id="add-image" href="javascript:void(0)">图片</a>
+                    <a class="btn btn-default" id="add-video" href="javascript:void(0)">视频</a>
+                    <a class="btn btn-default" id="add-audio" href="javascript:void(0)">音频</a>
+                    <a class="btn btn-default" id="add-clock" href="javascript:void(0)">时钟</a>
+                    <a class="btn btn-default" id="add-text" href="javascript:void(0)">文字</a>
+                    <a class="btn btn-default" id="add-url" href="javascript:void(0)">网页</a>
+                </div>
+                <span style="margin-left:20px;font-size:14px;float:left">
+                     <table>
+                         <tr>
+                             <td>X ：<input type="text" id="view_x" value="0"/></td>
+                             <td>Y ：<input type="text" id="view_y" value="0"/></td>
+                             <td rowspan="2">
+                                 <a class="btn btn-primary" style="height:48px;padding-top: 10px;" id="set-item" href="javascript:void(0)">修改</a>
+                                 <a class="btn btn-danger" style="height:48px;padding-top: 10px;" id="del-item" href="javascript:void(0)">删除</a>
+                             </td>
+                             <td rowspan="2">
+                                <span>
+                                    <b>说明</b>:每个区块最小为60*60像素,<br/>调整坐标与大小数字需要是60的倍数,<br/>如果不是60倍数会自动改变为60的倍数.
+                                </span>
+                             </td>
+                         </tr>
+                         <tr>
+                             <td>宽：<input type="text" id="view_w" value="0"/></td>
+                             <td>高：<input type="text" id="view_h" value="0"/></td>
+                         </tr>
+
+                     </table>
+                </span>
+                <span style="float: right;">
+                    <a class="btn btn-primary" id="save-grid" href="javascript:void(0)">保存</a>
+                    <a class="btn btn-warning" id="load-grid" href="javascript:void(0)">还原</a>
+                    <a class="btn btn-danger" id="clear-grid" href="javascript:void(0)">清空</a>
+                </span>
+            </div>
+            <div class="main-container">
+            <div class="grid-stack">
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    function guid() {
+        return new Date().getTime();
+    }
+    /*动态设置主容器宽高*/
+    function setContainerStyle(w, h) {
+        /*分辨率*/
+        var width = w;
+        var height = h;
+
+        var offset_width = (1-((width/30).toFixed(2)).toString().split('.')[1] * 0.01);
+        var offset_height = (1-((height/30).toFixed(2)).toString().split('.')[1] * 0.01);
+
+        offset_width == 1 ? offset_width = 0 : "";
+        offset_height == 1 ? offset_height = 0 : "";
+
+        var container_width = width + 60 * offset_width;
+        var container_height = height + 60 * offset_height;
+
+        $(".main-container").css("width", container_width);
+        $(".main-container").css("height", container_height);
+    }
+
+    $(function () {
+        /*分辨率*/
+        var width = $!{program.width} / 2;
+        var height = $!{program.height} / 2;
+
+        /*设置主容器宽高*/
+        setContainerStyle(width, height);
+
+        var offset = 60;
+        //Math.ceil 向上取整
+        var max_width = Math.ceil(width/offset);            // 算出节目比例
+        var max_height = Math.ceil(height/offset);          // 算出节目比例
+
+        var zindex = 0;
+        var options = {
+            verticalMargin: 0,   // 取消间距
+            float: true,        // 开启浮动
+            width: max_width,   //网格的列数
+            height: max_height //最大行数
+            // animate: true,      //转换为动画
+            // always_show_resize_handle: true, //缩放手柄将会一直显示
+            // cell_height: 60,     //单元格的高度。默认值为60。
+        };
+
+        $('.grid-stack').gridstack(options);   // 配置网格画布,初始化
+
+        // 网格变化事件
+        $('.grid-stack').on('change', function(event, items) {
+            if(typeof(items) == "undefined" || items == null){
+                return;
+            }
+
+            // console.log(items);
+            for (var i = 0; i < items.length; i++) {
+                $("#view_x").val(items[i].x * 2);
+                $("#view_y").val(items[i].y * 2);
+                /*把宽高的显示规则修改，改为按比例获取*/
+                $("#view_w").val(
+                    ((items[i].width/max_width) * width).toFixed(2) * 2
+                );
+                $("#view_h").val(
+                    ((items[i].height/max_height) * height).toFixed(2) * 2
+                );
+            }
+        });
+
+        var selectedNodeId = "";
+
+        new function () {
+            // 节目区域块
+            #if($program.items)
+                this.serialized_data = $program.items;
+            #else
+                this.serialized_data = [];
+            #end
+            // 从元素返回数据
+            this.grid = $('.grid-stack').data('gridstack');
+            // console.log(this.grid);
+
+            // 加载和还原节目区块
+            this.load_grid = function () {
+                this.grid.removeAll();
+                // 各个节目区块详细信息
+                var items = GridStackUI.Utils.sort(this.serialized_data);
+                // 迭代items  并把每一项作为参数传到 内部匿名函数
+                _.each(items, function (node) {
+                    //设置默认选中的class
+                    var selectedCls = "";
+                    if(node.id == selectedNodeId){
+                        selectedCls = "grid-stack-item-select";
+                    }
+
+                    node.x = node.x/(2+0);
+                    node.y = node.y/(2+0);
+                    node.width = node.width/(2+0);
+                    node.height = node.height/(2+0);
+
+                    // 判断该节目区块的节目内容并设置参数
+                    if(node.id.indexOf("image")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-image '+selectedCls+'">图片</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("video")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-video '+selectedCls+'" >视频</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("audio")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-audio '+selectedCls+'" >音频</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("text")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-text '+selectedCls+'" >文字</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("url")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-url '+selectedCls+'" >网页</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    } else if(node.id.indexOf("clock")>-1){
+                        this.grid.addWidget($('<div><div class="grid-stack-item-content grid-clock '+selectedCls+'" >时钟</div><div/>'),
+                            node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,node.id);
+                    }
+                    zindex++;
+                }, this);
+                // 选中某个item 的操作
+                $('.grid-stack-item').click(this.selectItem);
+            }.bind(this);
+
+            // 选择区块
+            this.selectItem = function(e){
+                // 移除其他选中的区块的选中样式
+                $(".grid-stack-item-select").removeClass("grid-stack-item-select");
+                // 为新选中区块添加样式
+                $(e.target).addClass("grid-stack-item-select");
+                // 如果区块 x 坐标值为 undefined ，直接无效
+                // e.target 取得该标签，整个标签的内容
+                // 如：<div class="grid-stack-item-content grid-text  ui-draggable-handle grid-stack-item-select">文字</div>
+                if($(e.target).parent().attr("data-gs-x") == undefined){
+                    console.debug("undefined    ");
+                    return;
+                }
+                // 获取区块id值
+                selectedNodeId = $(e.target).parent().attr("data-gs-id");
+                // 获取每个区块的 xy height width 的值 并 * 指定倍数60
+                // 赋值给页面顶部的显示框，显性数值
+                $("#view_x").val(parseInt($(e.target).parent().attr("data-gs-x")) * 2);
+                $("#view_y").val(parseInt($(e.target).parent().attr("data-gs-y")) * 2);
+                /*把宽高的显示规则修改，改为按比例获取*/
+                $("#view_w").val(
+                    (( $(e.target).parent().attr("data-gs-width")/max_width ) * width ).toFixed(2) * 2
+                );
+                $("#view_h").val(
+                    (($(e.target).parent().attr("data-gs-height")/max_height) * height).toFixed(2) * 2
+                );
+            }.bind(this);
+
+            /*用于说明层次结构*/
+            var order = 1;
+
+            // 保存区块信息
+            this.save_grid = function () {
+                this.serialized_data = _.map($('.grid-stack > .grid-stack-item:visible'), function (el) {
+                    el = $(el);
+
+                    common.showMessage("top:" + el.position().top);
+                    common.showMessage("left:" + el.position().left);
+                    common.showMessage("width:" + el.width());
+                    common.showMessage("height:" + el.height());
+
+                    var node = el.data('_gridstack_node');
+                    return {
+                        id:node.id,
+                        order: order++,
+                        x: node.x * (2+0),
+                        y: node.y * (2+0),
+                        width: node.width * (2+0),
+                        height: node.height * (2+0),
+                        reality_x: el.position().left.toFixed() * 2,
+                        reality_y: el.position().top.toFixed() * 2,
+                        reality_width: (node.width/max_width * width).toFixed(2) * 2,
+                        reality_height: (node.height/max_height * height).toFixed(2) * 2
+                    };
+                }, this);
+               var _items = JSON.stringify(this.serialized_data, null, '    ');
+               console.log(_items);
+               vm.save(_items);
+               order = 1;
+            }.bind(this);
+
+            //删除某个区块
+            this.deleteItem = function (e) {
+                _.map($('.grid-stack-item-select').parent(), function (el) {
+                    el = $(el);
+                    this.grid.removeWidget(el);
+                    return
+                }, this);
+            }.bind(this);
+
+            // 修改按钮
+            this.resizeItem = function (e) {
+                _.map($('.grid-stack-item-select').parent(), function (el) {
+                    el = $(el);
+                    // 获取输入的内容
+                    x = parseInt($("#view_x").val());
+                    y = parseInt($("#view_y").val());
+                    w = parseInt($("#view_w").val());
+                    h = parseInt($("#view_h").val());
+                    this.grid.update(el,x/(120+0),y/(120+0),w/(120+0),h/(120+0));
+
+                    var node = el.data('_gridstack_node');
+                    x = node.x*offset*(2+0)
+                    y = node.y*offset*(2+0)
+                    w = node.width*offset*(2+0)
+                    h = node.height*offset*(2+0)
+
+                    //重新加载一遍,解决错位问题
+                    this.serialized_data = _.map($('.grid-stack > .grid-stack-item:visible'),   function (el) {
+                        el = $(el);
+                        var node = el.data('_gridstack_node');
+                        return {
+                            id:node.id,
+                            x: node.x * (2+0),
+                            y: node.y * (2+0),
+                            width: node.width * (2+0),
+                            height: node.height * (2+0)
+                        };
+                    }, this);
+                    this.load_grid();
+                    $("#view_x").val(x);
+                    $("#view_y").val(y);
+                    $("#view_w").val(w);
+                    $("#view_h").val(h);
+
+                    return
+                }, this);
+            }.bind(this);
+
+            /**=======================================================*/
+            // 清空
+            this.clear_grid = function () {
+                this.grid.removeAll();
+            }.bind(this);
+
+            // 添加图片区块
+            this.add_new_image = function () {
+                var node = {
+                    x: 0,
+                    y: 0,
+                    width: 1,
+                    height: 1
+                };
+                zindex++;
+                id = "image_"+zindex+"_"+guid();
+                $(".grid-stack-item-select").removeClass("grid-stack-item-select");
+                this.grid.addWidget($('<div><div class="grid-stack-item-content grid-image grid-stack-item-select">图片</div><div/>'),
+                    node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,id);
+                $('.grid-stack-item').click(this.selectItem);
+                return false;
+            }.bind(this);
+
+            // 添加视频区块
+            this.add_new_video = function () {
+                var node = {
+                    x: 0,
+                    y: 0,
+                    width: 1,
+                    height: 1
+                };
+                zindex++;
+                id = "video_"+zindex+"_"+guid();
+                $(".grid-stack-item-select").removeClass("grid-stack-item-select");
+                this.grid.addWidget($('<div><div class="grid-stack-item-content grid-video grid-stack-item-select" >视频</div><div/>'),
+                    node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,id);
+                $('.grid-stack-item').click(this.selectItem);
+                return false;
+            }.bind(this);
+
+            // 添加音频区块
+            this.add_new_audio = function () {
+                var items = this.grid.grid.nodes;
+                var i = 0;
+                _.each(items, function (node) {
+                    if(node.id.indexOf("audio")>-1){
+                        i++;
+                    }
+                });
+                if (i >= 1) {
+                    dialogMsg("音频区块只能添加一个", common.msgType.ERROR);
+                    return false;
+                }
+                var node = {
+                    x: 0,
+                    y: 0,
+                    width: 1,
+                    height: 1
+                };
+                zindex++;
+                id = "audio_"+zindex+"_"+guid();
+                $(".grid-stack-item-select").removeClass("grid-stack-item-select");
+                this.grid.addWidget($('<div><div class="grid-stack-item-content grid-audio grid-stack-item-select" >音频</div><div/>'),
+                    node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,id);
+                $('.grid-stack-item').click(this.selectItem);
+                return false;
+            }.bind(this);
+
+            // 添加文本区块
+            this.add_new_text = function () {
+                var node = {
+                    x: 0,
+                    y: 0,
+                    width: 1,
+                    height: 1
+                };
+                zindex++;
+                id = "text_"+zindex+"_"+guid();
+                $(".grid-stack-item-select").removeClass("grid-stack-item-select");
+                this.grid.addWidget($('<div><div class="grid-stack-item-content grid-text grid-stack-item-select" >文字</div><div/>'),
+                    node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,id);
+                $('.grid-stack-item').click(this.selectItem);
+                return false;
+            }.bind(this);
+
+            // 添加网页区块
+            this.add_new_url = function () {
+                var node = {
+                    x: 0,
+                    y: 0,
+                    width: 1,
+                    height: 1
+                };
+                zindex++;
+                id = "url_"+zindex+"_"+guid();
+                $(".grid-stack-item-select").removeClass("grid-stack-item-select");
+                this.grid.addWidget($('<div><div class="grid-stack-item-content grid-url grid-stack-item-select">网页</div><div/>'),
+                    node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,id);
+                $('.grid-stack-item').click(this.selectItem);
+                return false;
+            }.bind(this);
+
+            //添加时钟区块
+            this.add_new_clock = function () {
+                var node = {
+                    x: 0,
+                    y: 0,
+                    width: 1,
+                    height: 1
+                };
+                zindex++;
+                id = "clock_"+999+zindex+"_"+guid();
+                $(".grid-stack-item-select").removeClass("grid-stack-item-select");
+                this.grid.addWidget($('<div><div class="grid-stack-item-content grid-clock grid-stack-item-select" >时钟</div><div/>'),
+                    node.x, node.y, node.width, node.height,false,1,max_width,1,max_height,id);
+                $('.grid-stack-item').click(this.selectItem);
+                return false;
+            }.bind(this);
+            /**=======================================================*/
+
+            $('#save-grid').click(this.save_grid);      // 保存
+            $('#del-item').click(this.deleteItem);      // 删除
+            $('#clear-grid').click(this.clear_grid);    // 清空
+            // $('#set-item').click(this.resizeItem);      // 修改按钮
+
+            $('#add-image').click(this.add_new_image);
+            $('#add-video').click(this.add_new_video);
+            $('#add-audio').click(this.add_new_audio);
+            $('#add-text').click(this.add_new_text);
+            $('#add-url').click(this.add_new_url);
+            $('#add-clock').click(this.add_new_clock);
+            this.load_grid();
+        }
+    })
+</script>
+
+<script src="${rc.contextPath}/statics/libs/vue.min.js"></script>
+<script src="${rc.contextPath}/statics/js/common.js"></script>
+<script src="${rc.contextPath}/statics/js/form.js"></script>
+<script src="${rc.contextPath}/statics/plugins/layer/layer.js"></script>
+
+<script src="${rc.contextPath}/statics/js/manage/program/layout.js?_${date.systemTime}"></script>
+</body>
+</html>

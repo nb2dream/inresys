@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.manage.program.dao.ManaProgramMaterialMapper">
+
+    <resultMap id="ManaProgramMaterialResultMap" type="net.chenlin.dp.manage.program.dto.ManaProgramMaterialDTO">
+        <id column="id" property="id" />
+        <!--column 表字段名 property 类字段名-->
+        <result column="item_id" property="itemId"/>
+        <result column="sort_num" property="sortNum"/>
+        <result column="material_id" property="materialId"/>
+        <result column="program_id" property="programId"/>
+        <result column="material_name" property="materialName"/>
+        <result column="classify_name" property="classifyName"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <resultMap id="ManaProgramMaterialAndMaterialInfoResultMap" type="net.chenlin.dp.manage.program.dto.ManaProgramMaterialDTO" extends="ManaProgramMaterialResultMap">
+        <association property="manaMaterialDTO" column="material_id"
+                     javaType="net.chenlin.dp.manage.material.dto.ManaMaterialDTO"
+                     select="getMaterial">
+            <id column="id" property="id" />
+            <!--column 表字段名 property 类字段名-->
+            <result column="content" property="content"/>
+            <result column="material_name" property="materialName"/>
+            <result column="path" property="path"/>
+            <result column="suffix" property="suffix"/>
+            <result column="create_user_id" property="createUserId"/>
+            <result column="classify_id" property="classifyId"/>
+            <result column="type" property="type"/>
+            <result column="file_size" property="fileSize"/>
+        </association>
+    </resultMap>
+
+    <select id="listForPage" resultMap="ManaProgramMaterialResultMap">
+        select
+            a.id,
+            a.item_id,
+            a.sort_num,
+            a.material_id,
+            a.program_id,
+            b.material_name,
+            b.type,
+            c.name AS classify_name
+        from
+            mana_program_material a
+        left join
+            mana_material b
+        on
+            a.material_id = b.id
+        left join
+            mana_classify c
+        on
+            b.classify_id = c.classify_id
+        where
+            a.item_id = #{itemId}
+        and
+            a.program_id = #{programId}
+        ORDER BY
+            a.sort_num ASC
+    </select>
+
+    <insert id="save">
+        INSERT INTO mana_program_material (
+            item_id,
+            sort_num,
+            material_id,
+            program_id,
+            gmt_create
+        )
+        VALUE (
+            #{itemId},
+            #{sortNum},
+            #{materialId},
+            #{programId},
+            NOW()
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE mana_program_material
+        <set>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            gmt_modified = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="countMaterialInItemId" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            mana_program_material
+        WHERE
+            item_id = #{itemId}
+        AND
+            program_id = #{programId}
+    </select>
+
+    <delete id="batchRemove">
+        DELETE
+        FROM
+            mana_program_material
+        WHERE
+            id IN
+            <foreach item="id" collection="array" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </delete>
+
+    <select id="list" resultMap="ManaProgramMaterialAndMaterialInfoResultMap">
+        SELECT
+            id,
+            item_id,
+            sort_num,
+            material_id,
+            program_id
+        FROM
+            mana_program_material
+        <where>
+            <if test="itemId != null">
+                AND item_id = #{itemId}
+            </if>
+            <if test="programId != null">
+                AND program_id = #{programId}
+            </if>
+            <if test="materialId">
+                AND material_id = #{materialId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getProgramMaterialSingle" resultMap="ManaProgramMaterialResultMap">
+        SELECT
+            id,
+            item_id,
+            sort_num,
+            material_id,
+            program_id
+        FROM
+            mana_program_material
+        <where>
+            <if test="itemId != null">AND item_id = #{itemId}</if>
+            <if test="sortNum != null">AND sort_num = #{sortNum}</if>
+            <if test="materialId != null">AND material_id = #{materialId}</if>
+            <if test="programId != null">AND program_id = #{programId}</if>
+        </where>
+    </select>
+
+    <select id="getObjectById" resultMap="ManaProgramMaterialResultMap">
+        SELECT
+            id,
+            item_id,
+            sort_num,
+            material_id,
+            program_id
+        FROM
+            mana_program_material
+        WHERE
+            id = #{id}
+    </select>
+    
+    <select id="listItemIdsByProgramId" resultType="String">
+        SELECT
+            item_id
+        FROM
+            mana_program_material
+        WHERE
+            program_id = #{programId}
+        GROUP BY
+            item_id
+    </select>
+
+    <select id="getMaterial" resultType="net.chenlin.dp.manage.material.dto.ManaMaterialDTO">
+        select
+            m.id,
+            m.content,
+            m.material_name,
+            m.path,
+            m.suffix,
+            m.type,
+            m.gmt_create,
+            m.file_size
+        from
+            mana_material m
+        WHERE
+            m.id = #{id}
+    </select>
+
+    <delete id="removeByProgramId">
+        DELETE
+        FROM
+            mana_program_material
+        WHERE
+            program_id = #{programId}
+    </delete>
+
+
+</mapper>

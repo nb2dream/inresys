@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Velocity模板测试</title>
+    #parse("include/header.html")
+</head>
+<body>
+    <h1>$!{data}</h1>
+    <h1>$!{a}/2</h1>
+    #foreach($item in [10..20])
+        $item
+    #end
+    #if($b)
+        <h1>true</h1>
+    #else
+        <h2>false</h2>
+    #end
+    <!--/*width: $!{width}px; !*965*!*/-->
+    <!--/*height: $!{height}px; !*540*!*/-->
+    #set($height = $!{a} / 2)
+    #set($width = $!{a} / 2 + 5)
+    <h1>$height</h1>
+    <h1>$width</h1>
+
+    #foreach($item in $!{itemPositionMap})
+        <h1>X=$item.x Y=$item.y width=$item.width height=$item.height id=$item.id</h1>
+        #if($item.id.indexOf('video') > -1)
+            <h1>${itemMaterialMap.get($item.id)}</h1>
+            <h1>========$item.id=========</h1>
+        #elseif($item.id.indexOf('image') > -1)
+            <h1>${itemMaterialMap.get($item.id).size()}</h1>
+            #foreach($mat in ${itemMaterialMap.get($item.id)})
+                <h1>$mat.manaMaterialDTO.path</h1>
+            #end
+            <h4>=========$item.id.split('_').get(1)==========</h4>
+        #end
+    #end
+</body>
+<script>
+    var a = $!{a} / 2;
+//    alert(a);
+</script>
+</html>

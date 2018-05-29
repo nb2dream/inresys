@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="zh" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="zh" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="zh"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="${rc.contextPath}/statics/plugins/videojs/video-js.css" rel="stylesheet">
+    <script src="${rc.contextPath}/statics/plugins/videojs/video.min.js"></script>
+</head>
+<body class="fixed-top">
+<video id="video" class="video-js vjs-default-skin" controls preload="auto"  style="/*width:100%;height:100%*/; object-fit: fill" data-setup="{}">
+    <p class="vjs-no-js">
+        播放视频需要启用 JavaScript，推荐使用支持HTML5的浏览器访问。
+    </p>
+</video>
+<script type="text/javascript">
+    var vList = ['${rc.contextPath}/webfile/$!{filePath}']; // 初始化播放列表
+    var vLen = vList.length;
+    var curr = 0;
+    var video = videojs('video');
+    video.on('ended', function(){
+        play();
+    });
+    videojs("video").ready(function(){
+        play();
+    });
+    function play() {
+        console.debug(vList[curr])
+        video.src(vList[curr]);
+        video.load();
+        video.play();
+        curr++;
+        if(curr >= vLen){
+            curr = 0; //重新循环播放
+        }
+    }
+</script>
+
+</body>
+</html>

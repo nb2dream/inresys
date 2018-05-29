@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>信息发布系统</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    #parse("include/header.html")
+</header>
+<body style="">
+    <div id="list">
+        <div class="container-fluid">
+            <!--主区块-->
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs12 no-padding">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">节目单列表</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs12 form-inline pull-left">
+                                    <div class="form-group">
+                                        <input v-model="keyword" @keyup.enter="load" class="form-control" placeholder="请输入查询关键字" style="width: 220px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <a class="btn btn-primary" @click="load"><i class="fa fa-search"></i>&nbsp;查询</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-sm-8 col-xs12">
+                                    <div class="btn-toolbar pull-right">
+                                        <div class="btn-group">
+                                            <a v-if="hasPermission('mana:programtask:list')" class="btn btn-default" @click="load" ><i class="fa fa-refresh"></i>&nbsp;刷新</a>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a v-if="hasPermission('mana:programtask:check')" class="btn btn-default" @click="applyCheck" ><i class="fa fa-newspaper-o"></i>&nbsp;申请审核</a>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a class="btn btn-default" @click="toRelation" ><i class="fa fa-briefcase"></i>&nbsp;节目管理</a>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a v-if="hasPermission('mana:programtask:save')" class="btn btn-default" @click="save" ><i class="fa fa-plus"></i>&nbsp;新增</a>
+                                            <a v-if="hasPermission('mana:programtask:edit')" class="btn btn-default" @click="edit" ><i class="fa fa-pencil-square-o"></i>&nbsp;编辑</a>
+                                            <a v-if="hasPermission('mana:programtask:remove')" class="btn btn-default" @click="remove" ><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row animated fadeInRight" style="padding: 10px 2px 0px 2px;">
+                                <table id="dataGrid" ></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    #parse("include/footer.html")
+
+    <script src="${rc.contextPath}/statics/js/manage/program/list_task.js?_${date.systemTime}"></script>
+
+</body>
+</html>

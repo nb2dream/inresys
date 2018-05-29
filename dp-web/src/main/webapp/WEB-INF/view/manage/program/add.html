@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加节目</title>
+
+    #parse("include/header.html")
+<body>
+</head>
+<div id="add" class="container-fluid">
+    <table class="form" id="form">
+        <tr>
+            <td class="formTitle">节目名称<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" v-model="program.name" class="form-control" placeholder="节目名称"  isvalid="yes"  checkexpession="LenStr" length="15">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">节目描述<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" v-model="program.description" class="form-control" placeholder="节目描述"  isvalid="yes" checkexpession="LenStr" length="25">
+            </td>
+        </tr>
+        <tr v-if="!isEdit">
+            <td class="formTitle">分辨率<font face="宋体">*</font></td>
+            <td class="formValue">
+                <!--<input type="text"  class="form-control pointer"   isvalid="yes" checkexpession="NotNull" v-model="terminal.classifyName" @click="classifyTree" readonly="readonly" placeholder="终端分组">-->
+                <select class="form-control pointer" v-model="ratios" @click="strSplit">
+                    <option value="1920*1080" selected="selected">1920*1080</option>
+                    <option value="1080*1920">1080*1920</option>
+                    <option value="3840*2160">3840*2160</option>
+                    <option value="2160*3840">2160*3840</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+</div>
+#parse("include/footer.html")
+<script src="${rc.contextPath}/statics/js/manage/program/add.js"></script>
+</body>
+</html>

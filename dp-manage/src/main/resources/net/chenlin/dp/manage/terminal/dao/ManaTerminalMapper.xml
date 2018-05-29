@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.manage.terminal.dao.ManaTerminalMapper">
+
+    <select id="listForPage" resultType="ManaTerminalEntity">
+        SELECT
+            t.id,
+            t.terminal_id,
+            t.terminal_name,
+            t.create_date,
+            t.create_user_id,
+            t.last_online_date,
+            t.network_status,
+            t.remark,
+            t.sync_status,
+            t.classify_id,
+            t.classify_name
+        FROM
+            mana_terminal t
+        <where>
+            <if test="createUserId != null">
+                AND create_user_id = #{createUserId}
+            </if>
+            <if test="terminal_id != null">
+                AND terminal_id = #{terminalId}
+            </if>
+            <if test="classifyId != null">
+                AND t.classify_id = #{classifyId}
+            </if>
+            <if test="rootNode != null">
+                AND t.root_node = #{rootNode}
+            </if>
+            <if test="name != null and name.trim() != '' ">
+                AND t.terminal_name LIKE concat('%',#{name},'%')
+                OR t.terminal_id LIKE concat('%',#{name},'%')
+                OR t.classify_name LIKE concat('%',#{name},'%')
+            </if>
+        </where>
+        ORDER BY
+            t.network_status DESC, t.id DESC
+    </select>
+
+    <insert id="save">
+        INSERT INTO mana_terminal (
+            terminal_id,
+            terminal_name,
+            create_date,
+            create_user_id,
+            last_online_date,
+            network_status,
+            remark,
+            sync_status,
+            classify_id,
+            root_node,
+            classify_name
+        )
+        VALUE (
+            #{terminalId},
+            #{terminalName},
+            NOW(),
+            #{createUserId},
+            #{lastOnlineDate},
+            #{networkStatus},
+            #{remark},
+            #{syncStatus},
+            #{classifyId},
+            #{rootNode},
+            #{classifyName}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE mana_terminal
+        <set>
+            <if test="terminalId != null" >terminal_id = #{terminalId},</if>
+            <if test="terminalName != null" >terminal_name = #{terminalName},</if>
+            <if test="createUserId != null" >create_user_id = #{createUserId},</if>
+            <if test="lastOnlineDate != null" >last_online_date = #{lastOnlineDate},</if>
+            <if test="networkStatus != null" >network_status = #{networkStatus},</if>
+            <if test="remark != null" >remark = #{remark},</if>
+            <if test="syncStatus != null" >sync_status = #{syncStatus},</if>
+            <if test="classifyId != null" >classify_id = #{classifyId},</if>
+            <if test="classifyName != null" >classify_name = #{classifyName},</if>
+            gmt_modified = NOW()
+        </set>
+        <where>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="terminalId != null">
+                AND terminal_id = #{terminalId}
+            </if>
+        </where>
+    </update>
+    
+    <delete id="batchRemove">
+        DELETE 
+        FROM 
+            mana_terminal
+        WHERE 
+            id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getObjectById" resultType="ManaTerminalEntity">
+        SELECT
+            t.id,
+            t.terminal_id,
+            t.terminal_name,
+            t.create_date,
+            t.create_user_id,
+            t.last_online_date,
+            t.network_status,
+            t.remark,
+            t.sync_status,
+            t.classify_id,
+            t.classify_name
+        FROM
+            mana_terminal t
+        WHERE
+            t.id = #{id}
+    </select>
+
+    <select id="countTerminalByClassifyId" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            mana_terminal
+        WHERE
+            classify_id = #{id}
+    </select>
+
+    <select id="countTotal" resultType="int">
+        SELECT
+          count(*)
+        FROM
+          mana_terminal
+        <where>
+            <if test="networkStatus != -1">
+                network_status = #{networkStatus}
+            </if>
+            <if test="createUserId != null">
+                AND create_user_id = #{createUserId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getObject" resultType="ManaTerminalEntity">
+        SELECT
+            t.id,
+            t.terminal_id,
+            t.terminal_name,
+            t.create_date,
+            t.create_user_id,
+            t.last_online_date,
+            t.network_status,
+            t.remark,
+            t.sync_status,
+            t.classify_id,
+            t.classify_name
+        FROM
+            mana_terminal t
+        <where>
+            <if test="createUserId != null">
+                AND create_user_id = #{createUserId}
+            </if>
+            <if test="terminalId != null">
+                AND terminal_id = #{terminalId}
+            </if>
+            <if test="classifyId != null">
+                AND t.classify_id = #{classifyId}
+            </if>
+            <if test="rootNode != null">
+                AND t.root_node = #{rootNode}
+            </if>
+        </where>
+    </select>
+
+    <select id="listTerminalId" resultType="String">
+        SELECT
+            terminal_id
+        FROM
+            mana_terminal
+    </select>
+
+    <select id="list" resultType="ManaTerminalEntity">
+        SELECT
+        t.id,
+        t.terminal_id,
+        t.terminal_name,
+        t.create_date,
+        t.create_user_id,
+        t.last_online_date,
+        t.network_status,
+        t.remark,
+        t.sync_status,
+        t.classify_id,
+        t.classify_name
+        FROM
+            mana_terminal t
+        <where>
+            <if test="createUserId != null">
+                AND create_user_id = #{createUserId}
+            </if>
+            <if test="terminalId != null">
+                AND terminal_id = #{terminalId}
+            </if>
+            <if test="classifyId != null">
+                AND t.classify_id = #{classifyId}
+            </if>
+            <if test="rootNode != null">
+                AND t.root_node = #{rootNode}
+            </if>
+            <if test="networkStatus != nul">
+                AND t.network_status = #{networkStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="getCityCodeByName" parameterType="String" resultType="String">
+        select city_code from tbl_city where city_name = #{cityName}
+    </select>
+
+    <update id="updateDeviceStatus">
+        update mana_terminal set network_status = 0
+    </update>
+
+</mapper>

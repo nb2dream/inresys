@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>节目定时任务</title>
+
+    #parse("include/header.html")
+<body>
+</head>
+<div id="add" class="container-fluid">
+    <table class="form" id="form">
+        <tr>
+            <td class="formTitle">播发日期<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" class="form-control" placeholder="请选择日期范围" v-model="dateRange" id="date"  isvalid="no" checkexpession="notNull" readonly="readonly">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">播发时间<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" class="form-control" placeholder="请选择时间范围" v-model="timeRange" id="time" isvalid="no" checkexpession="notNull" readonly="readonly">
+            </td>
+        </tr>
+        <tr>
+        </tr>
+    </table>
+</div>
+#parse("include/footer.html")
+<script src="${rc.contextPath}/statics/plugins/laydate/laydate.js"></script>
+<script src="${rc.contextPath}/statics/js/manage/program/program_timing.js"></script>
+</body>
+</html>

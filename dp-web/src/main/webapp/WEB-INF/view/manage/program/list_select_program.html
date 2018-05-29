@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>信息发布系统</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    #parse("include/header.html")
+</header>
+<body style="">
+<div id="list">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs12 form-inline">
+            <div class="form-group">
+                <input v-model="keyword" @keyup.enter="load" class="form-control" placeholder="请输入查询关键字" style="width: 220px;" />
+            </div>
+            <div class="form-group">
+                <a class="btn btn-primary" @click="load"><i class="fa fa-search"></i>&nbsp;查询</a>
+            </div>
+        </div>
+    </div>
+    <div class="row animated fadeInRight" style="padding: 10px 2px 0px 2px;">
+        <table id="dataGrid" ></table>
+    </div>
+</div>
+
+#parse("include/footer.html")
+
+<script src="${rc.contextPath}/statics/js/manage/program/list_select_program.js?_${date.systemTime}"></script>
+
+</body>
+</html>

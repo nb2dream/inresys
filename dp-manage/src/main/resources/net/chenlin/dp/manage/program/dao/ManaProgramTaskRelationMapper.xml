@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.manage.program.dao.ManaProgramTaskRelationMapper">
+
+    <resultMap id="ProgramTaskRelationResultMap" type="net.chenlin.dp.manage.program.dto.ManaProgramTaskRelationDTO">
+        <id column="id" property="id" />
+        <!--column 表字段名 property 类字段名-->
+        <result column="program_id" property="programId"/>
+        <result column="task_id" property="taskId"/>
+        <result column="player_num" property="playerNum"/>
+        <result column="begin_date" property="beginDate"/>
+        <result column="begin_time" property="beginTime"/>
+        <result column="end_date" property="endDate"/>
+        <result column="end_time" property="endTime"/>
+        <result column="week" property="week"/>
+        <result column="program_name" property="programName"/>
+        <result column="width" property="width"/>
+        <result column="height" property="height"/>
+    </resultMap>
+
+    <select id="listForPage" resultMap="ProgramTaskRelationResultMap">
+        select
+            a.id,
+            a.task_id,
+            a.program_id,
+            a.player_num,
+            a.begin_date,
+            a.end_date,
+            a.begin_time,
+            a.end_time,
+            a.week,
+            b.name as program_name,
+            b.width,
+            b.height,
+            b.description
+        from
+            mana_program_programtask_relation a
+        left join
+            mana_program b
+        on
+            a.program_id = b.id
+        left join
+            mana_program_task c
+        on
+            a.task_id = c.id
+        where
+            a.task_id = #{id}
+        ORDER BY
+            a.player_num ASC
+    </select>
+
+    <insert id="save">
+        INSERT INTO mana_program_programtask_relation (
+            program_id,
+            task_id,
+            player_num,
+            begin_date,
+            begin_time,
+            end_date,
+            end_time,
+            week,
+            gmt_create
+        )
+        VALUE (
+            #{programId},
+            #{taskId},
+            #{playerNum},
+            #{beginDate},
+            #{beginTime},
+            #{endDate},
+            #{endTime},
+            #{week},
+            NOW()
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE mana_program_programtask_relation
+        <set>
+            <if test="playerNum != null">player_num = #{playerNum},</if>
+            <if test="beginDate != null">begin_date = #{beginDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="beginTime != null">begin_time = #{beginTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="week != null">week = #{week},</if>
+            gmt_modified = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="countTotalByTaskId" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            mana_program_programtask_relation
+        WHERE
+            task_id = #{taskId}
+    </select>
+
+    <select id="getRelationSingle" resultMap="ProgramTaskRelationResultMap">
+        SELECT
+            id,
+            program_id,
+            task_id,
+            player_num,
+            begin_date,
+            end_date,
+            begin_time,
+            end_time,
+            week
+        FROM
+            mana_program_programtask_relation
+        <where>
+            <if test="programId != null">AND program_id = #{programId}</if>
+            <if test="taskId != null">AND task_id = #{taskId}</if>
+            <if test="playerNum != null">AND player_num = #{playerNum}</if>
+        </where>
+
+    </select>
+
+    <select id="getObjectById" resultMap="ProgramTaskRelationResultMap">
+        SELECT
+            id,
+            program_id,
+            task_id,
+            player_num,
+            begin_date,
+            end_date,
+            begin_time,
+            end_time,
+            week
+        FROM
+            mana_program_programtask_relation
+        WHERE
+            id = #{id}
+    </select>
+
+    <delete id="batchRemove">
+        DELETE
+        FROM
+          mana_program_programtask_relation
+        WHERE
+          id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="list" resultMap="ProgramTaskRelationResultMap">
+        SELECT
+            id,
+            program_id,
+            task_id,
+            player_num,
+            begin_date,
+            end_date,
+            begin_time,
+            end_time,
+            week
+        FROM
+            mana_program_programtask_relation
+        <where>
+            <if test="programId != null">AND program_id = #{programId}</if>
+            <if test="taskId != null">AND task_id = #{taskId}</if>
+            <if test="playerNum != null">AND player_num = #{playerNum}</if>
+        </where>
+        ORDER BY
+            player_num ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>信息发布系统</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    #parse("include/header.html")
+</header>
+<body style="">
+    <div id="list">
+        <div class="container-fluid">
+            <!--主区块-->
+            <div class="row">
+                <!--右面板：终端列表-->
+                <div class="col-md-12 col-sm-12 col-xs12 no-padding">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">节目列表</div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-4 col-xs12 form-inline pull-left">
+                                    <div class="form-group">
+                                        <input v-model="keyword" @keyup.enter="load" class="form-control" placeholder="请输入查询关键字" style="width: 220px;" />
+                                    </div>
+                                    <div class="form-group">
+                                        <a class="btn btn-primary" @click="load"><i class="fa fa-search"></i>&nbsp;查询</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-sm-8 col-xs12">
+                                    <div class="btn-toolbar pull-right">
+                                        <div class="btn-group">
+                                            <a v-if="hasPermission('mana:program:list')" class="btn btn-default" @click="load" ><i class="fa fa-refresh"></i>&nbsp;刷新</a>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a v-if="hasPermission('mana:program:layout')" class="btn btn-default" @click="layout" ><i class="fa fa-braille"></i>&nbsp;布局</a>
+                                            <a v-if="hasPermission('mana:program:material')" class="btn btn-default" @click="material" ><i class="fa fa-camera"></i>&nbsp;素材</a>
+                                            <a v-if="hasPermission('mana:program:preview')" class="btn btn-default" @click="preview" ><i class="fa fa-wpexplorer"></i>&nbsp;预览</a>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a v-if="hasPermission('mana:program:save')" class="btn btn-default" @click="save" ><i class="fa fa-plus"></i>&nbsp;新增</a>
+                                            <a v-if="hasPermission('mana:program:edit')" class="btn btn-default" @click="edit" ><i class="fa fa-pencil-square-o"></i>&nbsp;编辑</a>
+                                            <a v-if="hasPermission('mana:program:remove')" class="btn btn-default" @click="remove" ><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row animated fadeInRight" style="padding: 10px 2px 0px 2px;">
+                                <table id="dataGrid" ></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    #parse("include/footer.html")
+
+    <script src="${rc.contextPath}/statics/js/manage/program/list.js?_${date.systemTime}"></script>
+
+</body>
+</html>

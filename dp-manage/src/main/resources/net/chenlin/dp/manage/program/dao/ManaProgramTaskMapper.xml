@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.chenlin.dp.manage.program.dao.ManaProgramTaskMapper">
+
+    <resultMap id="ProgramTaskResultMap" type="net.chenlin.dp.manage.program.dto.ManaProgramTaskDTO">
+        <id column="id" property="id" />
+        <!--column 表字段名 property 类字段名-->
+        <result column="task_name" property="taskName"/>
+        <result column="description" property="description"/>
+        <result column="play_model" property="playModel"/>
+        <result column="create_user_id" property="createUserId"/>
+        <result column="status" property="status"/>
+        <result column="version" property="version"/>
+        <result column="width" property="width"/>
+        <result column="height" property="height"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modified" property="gmtModified"/>
+        <result column="publish_path" property="publishPath"/>
+        <result column="create_user_name" property="createUserName"/>
+    </resultMap>
+
+    <select id="listForPage" resultMap="ProgramTaskResultMap">
+        SELECT
+            m.id,
+            m.task_name,
+            m.description,
+            m.play_model,
+            m.create_user_id,
+            m.status,
+            m.version,
+            m.publish_path,
+            m.width,
+            m.height,
+            m.gmt_create,
+            u.username AS create_user_name
+        FROM
+            mana_program_task m
+        LEFT JOIN
+            sys_user u
+        ON
+            m.create_user_id = u.user_id
+        <where>
+            <if test="createUserId != null">
+                AND m.create_user_id = #{createUserId}
+            </if>
+            <if test="status != null">
+                AND m.status = #{status}
+            </if>
+            <if test="name != null and name.trim() != '' ">
+                AND m.task_name LIKE concat('%',#{name},'%')
+                OR m.id LIKE concat('%',#{name},'%')
+                OR u.username LIKE concat('%',#{name},'%')
+            </if>
+        </where>
+        ORDER BY
+        m.status ASC, m.id DESC
+    </select>
+
+    <insert id="save">
+        INSERT INTO mana_program_task (
+            task_name,
+            description,
+            play_model,
+            create_user_id,
+            status,
+            version,
+            width,
+            height,
+            gmt_create,
+            gmt_modified
+        )
+        VALUE (
+            #{taskName},
+            #{description},
+            #{playModel},
+            #{createUserId},
+            #{status},
+            #{version},
+            #{width},
+            #{height},
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <select id="getObjectById" resultMap="ProgramTaskResultMap">
+        SELECT
+            m.id,
+            m.task_name,
+            m.description,
+            m.play_model,
+            m.create_user_id,
+            m.status,
+            m.version,
+            m.publish_path,
+            m.gmt_create,
+            u.username AS create_user_name
+        FROM
+            mana_program_task m
+        LEFT JOIN
+            sys_user u
+        ON
+            m.create_user_id = u.user_id
+        WHERE
+            m.id = #{id}
+    </select>
+
+    <select id="getProgramTaskByParams" resultMap="ProgramTaskResultMap">
+        SELECT
+            m.id,
+            m.task_name,
+            m.description,
+            m.play_model,
+            m.create_user_id,
+            m.status,
+            m.version,
+            m.publish_path,
+            m.gmt_create,
+            u.username AS create_user_name
+        FROM
+            mana_program_task m
+        LEFT JOIN
+            sys_user u
+        ON
+            m.create_user_id = u.user_id
+        WHERE
+            m.id = #{programTaskId}
+        AND
+            u.user_id = #{userId}
+    </select>
+
+    <delete id="batchRemove">
+        DELETE
+        FROM
+            mana_program_task
+        WHERE
+            id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="update">
+        UPDATE mana_program_task
+        <set>
+            <if test="taskName != null" >task_name = #{taskName},</if>
+            <if test="description != null" >description = #{description},</if>
+            <if test="playModel != null" >play_model = #{playModel},</if>
+            <if test="status != null" >status = #{status},</if>
+            <if test="version != null" >version = #{version},</if>
+            <if test="publishPath != null" >publish_path = #{publishPath},</if>
+            gmt_modified = NOW()
+        </set>
+        WHERE id = #{id}
+        <if test="createUserId != null">
+            AND create_user_id = #{createUserId}
+        </if>
+    </update>
+
+    <select id="listIsPassTask" resultMap="ProgramTaskResultMap">
+        SELECT
+            m.id,
+            m.task_name,
+            m.gmt_create,
+            m.gmt_Modified
+        FROM
+            mana_program_task m
+        WHERE
+            status = 1
+        <if test="_parameter != null">
+            AND create_user_id = #{_parameter}
+        </if>
+    </select>
+
+</mapper>

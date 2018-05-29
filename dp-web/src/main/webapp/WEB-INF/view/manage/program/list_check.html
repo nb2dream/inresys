@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>信息发布系统</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    #parse("include/header.html")
+</header>
+<body style="">
+<div id="list">
+    <div class="container-fluid">
+        <!--主区块-->
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs12 no-padding">
+                <div class="panel panel-default">
+                    <div class="panel-heading">节目单审核</div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-4 col-sm-4 col-xs12 form-inline pull-left">
+                                <div class="form-group">
+                                    <input v-model="keyword" @keyup.enter="load" class="form-control" placeholder="请输入查询关键字" style="width: 220px;" />
+                                </div>
+                                <div class="form-group">
+                                    <td class="formValue">
+                                        <select class="form-control pointer" v-model="status">
+                                            <option value="-1">待审核</option>
+                                            <option value="0">审核未通过</option>
+                                        </select>
+                                    </td>
+                                </div>
+                                <div class="form-group">
+                                    <a class="btn btn-primary" @click="load"><i class="fa fa-search"></i>&nbsp;查询</a>
+                                </div>
+                            </div>
+                            <div class="col-md-8 col-sm-8 col-xs12">
+                                <div class="btn-toolbar pull-right">
+                                    <div class="btn-group">
+                                        <a v-if="hasPermission('mana:programcheck:list')" class="btn btn-default" @click="load"><i class="fa fa-refresh"></i>&nbsp;刷新</a>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a v-if="hasPermission('mana:programcheck:check')" class="btn btn-default" data-toggle="modal" :data-target="[isShow? '#myModal':'']" @click="checkSelect"><i class="fa fa-newspaper-o"></i>&nbsp;审核节目</a>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a v-if="hasPermission('mana:programcheck:program')" class="btn btn-default" @click="toRelation"><i class="fa fa-briefcase"></i>&nbsp;节目内容</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row animated fadeInRight" style="padding: 10px 2px 0px 2px;">
+                            <table id="dataGrid" ></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" @click="isShow=false">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">审核节目</h4>
+                </div>
+                <div class="modal-body">
+                    <select class="form-control pointer" v-model="params.status">
+                        <option value=1>审核通过</option>
+                        <option value=0>不符合要求</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @click="isShow=false">关闭</button>
+                    <button type="button" class="btn btn-primary" @click="submit">确认</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</div>
+
+#parse("include/footer.html")
+
+<script src="${rc.contextPath}/statics/js/manage/program/list_check.js?_${date.systemTime}"></script>
+
+</body>
+</html>

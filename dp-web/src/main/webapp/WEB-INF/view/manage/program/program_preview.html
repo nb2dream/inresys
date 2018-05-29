@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>预览-$!{program.name}</title>
+
+    <link rel="stylesheet" href="${rc.contextPath}/statics/pvlib/gridstack/bootstrap.min.css">
+    <link rel="stylesheet" href="${rc.contextPath}/statics/pvlib/gridstack/gridstack.css"/>
+    <link rel="stylesheet" href="${rc.contextPath}/statics/pvlib/gridstack/gridstack-extra.css"/>
+    <link rel="stylesheet" href="${rc.contextPath}/statics/pvlib/videojs/video-js.css"/>
+
+    <script src="${rc.contextPath}/statics/pvlib/gridstack/jquery.min.js"></script>
+    <script src="${rc.contextPath}/statics/pvlib/gridstack/jquery-ui.js"></script>
+    <script src="${rc.contextPath}/statics/pvlib/gridstack/bootstrap.min.js"></script>
+    <script src="${rc.contextPath}/statics/pvlib/gridstack/lodash.min.js"></script>
+    <script src="${rc.contextPath}/statics/pvlib/gridstack/gridstack.js"></script>
+    <script src="${rc.contextPath}/statics/pvlib/gridstack/gridstack.jQueryUI.js"></script>
+
+    <script src="${rc.contextPath}/statics/pvlib/videojs/video.min.js"></script>
+    <script src="${rc.contextPath}/statics/pvlib/slides/jquery.slides.min.js"></script>
+
+    <style type="text/css">
+        .main-container {
+            overflow: hidden;
+            background: lightgoldenrodyellow;
+            width: ${program.width}px;
+            height: ${program.height}px;
+        }
+
+        .grid-stack {
+            background: lightgoldenrodyellow;
+        }
+
+        .grid-stack-item-content {
+            color: #000;
+            text-align: center;
+            background: #f0f6fa;
+            position: static !important;
+            overflow: hidden;
+            overflow-x:hidden;
+        }
+        .slides img {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+<body>
+
+<div class="main-container">
+    <div class="grid-stack">
+        <div class="grid-stack">
+            #foreach($item in $!{itemPositionMap})
+                <div data-gs-x="$item.x" data-gs-y="$item.y"
+                        data-gs-width="$item.width" data-gs-height="$item.height"
+                        data-gs-id="$item.id"
+                        class="grid-stack-item ui-draggable ui-resizable ui-resizable-autohide ui-draggable-disabled ui-resizable-disabled">
+                    <div class="grid-stack-item-content ui-draggable-handle">
+                        #if($item.id.indexOf('image') > -1)
+                            <!--如果只有一张图片，不要设置class="slides"-->
+                            #if(${itemMaterialMap.get($item.id).size()} > 1)
+                            <div class="slides" style="overflow: hidden; position:relative;z-index:$item.id.split('_').get(1);width:${item.reality_width}px;height:${item.reality_height}px;">
+                            #else
+                            <div style="overflow: hidden; position:relative;z-index:$item.id.split('_').get(1);width:${item.reality_width}px;height:${item.reality_height}px;">
+                            #end
+                            #foreach($mat in ${itemMaterialMap.get($item.id)})
+                                <img src="${rc.contextPath}/webfile/$!{mat.manaMaterialDTO.path}" />
+                            #end
+                            </div>
+
+                        #elseif($item.id.indexOf('video') > -1)
+                            <video id="$item.id" class="video-js" controls preload="auto" style="overflow:hidden; position:relative;z-index: $item.id.split('_').get(1);width:${item.reality_width}px;height:${item.reality_height}px; object-fit: fill" data-setup="{}">
+                            <p class="vjs-no-js">
+                                To view this video please enable JavaScript, and consider upgrading to a web browser that
+                                <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                            </p>
+                            </video>
+                            <script>
+                                (function($){
+                                    //视频播放使用videojs插件
+                                    var list${item.id} = [
+                                        #foreach($mat in ${itemMaterialMap.get($item.id)})
+                                            {name:"${mat.manaMaterialDTO.id}", url: "/webfile/${mat.manaMaterialDTO.path}", lastTime:0},
+                                        #end
+                                    ];
+
+                                    var player = videojs("$item.id").ready(function(){
+                                        var i = 0;
+                                        var videoObj = list${item.id}[i];
+
+                                        //绑定视频播放结束事件
+                                        this.on("ended", function(){
+                                            i++;
+                                            if(i > list${item.id}.length - 1){
+                                                i = 0;
+                                            }
+
+                                            videoObj = list${item.id}[i];
+                                            this.src(videoObj.url);
+                                            this.load();
+                                            this.play();
+                                        });
+
+                                        this.src(videoObj.url);
+                                        this.play();
+                                    });
+                                })(jQuery)
+                            </script>
+                        #elseif($item.id.indexOf('audio') > -1)
+                            <audio id="$!{item.id}" style="position:relative;z-index: $item.id.split('_').get(1);" controls autoplay>
+                            </audio>
+                            <script>
+                                (function($){
+                                    var list${item.id} = [
+                                    #foreach($mat in ${itemMaterialMap.get($item.id)})
+                                        '/webfile/$!{mat.manaMaterialDTO.path}',
+                                    #end
+                                    ]; // 初始化播放列表
+                                    var vLen = list${item.id}.length;
+                                    var curr = 0;
+                                    var audio = document.getElementById('${item.key}');
+                                    audio.onended = function(){
+                                        play();
+                                    };
+
+                                    function play() {
+                                        audio.src = list${item.id}[curr];
+                                        console.log(audio.src);
+                                        audio.load();
+                                        audio.play();
+                                        curr++;
+                                        if(curr >= vLen){
+                                            curr = 0; //重新循环播放
+                                        }
+                                    }
+                                    play();
+                                })(jQuery)
+                            </script>
+                        #elseif($item.id.indexOf('text') > -1)
+                            #foreach($mat in ${itemMaterialMap.get($item.id)})
+                                <!--<div style="position:relative;z-index: $item.id.split('_').get(1); line-height:${item.reality_height}px">${mat.manaMaterialDTO.content}</div>-->
+                                <marquee id="$!{item.id}" style="position:relative;z-index: $item.id.split('_').get(1);"  Width=${item.reality_width} Height=${item.reality_height} ScrollAmount=2 Direction=left></marquee>
+                                <script>
+                                    var json = ${mat.manaMaterialDTO.content};
+                                    var content = json.content;
+                                    var fontSize = json.fontSize;
+                                    $("#$!{item.id}").html(content);
+                                    $("#$!{item.id}").css("font-size", fontSize)
+                                </script>
+                            #end
+                        #elseif($item.id.indexOf('url') > -1)
+                            #foreach($mat in ${itemMaterialMap.get($item.id)})
+                                <iframe id="ifm_${item.key}" src="${mat.manaMaterialDTO.content}" style="position:relative;z-index: $item.id.split('_').get(1);;" frameborder="0" scrolling="no" width="${item.reality_width}" height="${item.reality_height}"></iframe>
+                            #end
+                        #end
+                    </div>
+                    <div></div>
+                    <div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se"
+                         style="z-index: 90; display: none;"></div>
+                </div>
+            #end
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(function () {
+        #if($!{program.width} == "1920")
+            var max_width = 32;
+        #else
+            var max_width = 18;
+        #end
+        #if($!{program.height} == "1080")
+            var max_height = 18;
+        #else
+            var max_height = 32;
+        #end
+//        var w = $!{program.width};
+//        var h = $!{program.height};
+//        var max_width = w / 60;
+//        var max_height = h / 60;
+
+
+
+        var options = {
+            disableDrag: true,
+            disableResize: true,
+            verticalMargin: 0,
+            float: true,
+            width: max_width,
+            height: max_height
+        };
+        $('.grid-stack').gridstack(options);
+    });
+    $(document).ready(function(e) {
+
+        $(".slides").slidesjs({
+            generateNextPrev: false,
+            pagination:false,
+            generatePagination:false,
+            navigation:{
+                active: false
+            },
+            play: {
+                active: false,
+                effect: "slide",
+                // [string] Can be either "slide" or "fade".
+                interval: 5000,
+                // [number] Time spent on each slide in milliseconds.
+                auto: true,
+                // [boolean] Start playing the slideshow on load.
+                swap: false,
+                // [boolean] show/hide stop and play buttons
+                pauseOnHover: false,
+                // [boolean] pause a playing slideshow on hover
+                restartDelay: 500
+                // [number] restart delay on inactive slideshow
+            }
+        });
+    });
+
+
+</script>
+
+</body>
+</html>

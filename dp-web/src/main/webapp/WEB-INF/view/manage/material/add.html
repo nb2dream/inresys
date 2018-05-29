@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    #parse("include/header.html")
+    <link rel="stylesheet" href="${rc.contextPath}/statics/plugins/webuploader/webuploader.css" >
+<body>
+</head>
+<div id="add" class="container-fluid">
+<form id="uploadForm">
+
+    <table class="form" id="form" style="margin-bottom: 10px;">
+        <tr>
+            <td class="formTitle">素材类型<font face="宋体">*</font></td>
+            <td class="formValue">
+                <select class="form-control pointer" v-model="material.type" @click="setUpLoadType" name="type">
+                    <option value=1>图片</option>
+                    <option value=2>视频</option>
+                    <option value=3>音频</option>
+                    <option value=4>文字</option>
+                    <option value=5>网址</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">所属素材分组<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" class="form-control pointer" v-model="material.classifyName"   isvalid="yes" checkexpession="NotNull"  @click="classifyTree()" readonly="readonly" placeholder="素材分组">
+                <input type="hidden" class="form-control pointer" v-model="material.classifyId" name="classifyId">
+            </td>
+        </tr>
+        <tr v-if="material.type == 4 || material.type == 5">
+            <td class="formTitle">素材名：<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" name="materialName"  class="form-control pointer" checkexpession="NotNull"  @click="" isvalid="yes" checkexpession="LenStr" length="12" placeholder="素材名称">
+            </td>
+        </tr>
+        <tr v-if="material.type == 5">
+            <td class="formTitle">网址：<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" name="content"  class="form-control pointer" checkexpession="Uri"  @click="" isvalid="yes" checkexpession="Uri" placeholder="http://">
+            </td>
+        </tr>
+        <tr v-if="material.type == 4">
+            <td class="formTitle">文字内容：<font face="宋体">*</font></td>
+            <td class="formValue">
+                <!--<input type="text" name="materialName"  class="form-control pointer" checkexpession="NotNull"  @click="" isvalid="yes" checkexpession="LenStr" length="12" placeholder="素材名称">-->
+                <textarea class="form-control" rows="3" name="content"></textarea>
+            </td>
+        </tr>
+        <tr v-if="material.type == 4">
+            <td class="formTitle">参数设置:<font face="宋体">*</font></td>
+            <td class="formValue">
+                字体大小: <input type="number" value="60" name="fontSize">
+            </td>
+        </tr>
+    </table>
+    <!--<buttom class="btn btn-primary" v-if="material.type == 4">输入文本</buttom>-->
+    <div id="upload" v-show="material.type == 1 | material.type == 2 | material.type == 3">
+        <!--<div id="thelist" style="display:none;">-->
+            <!--<input type="text" name="list" style="margin-bottom: 10px;"  class="form-control pointer" readonly="readonly" >-->
+        <!--</div>-->
+        <!--提交按钮-->
+        <!--<div id="picker"></div>-->
+        <!--<button class="btn btn-default" id="ctlBtn">开始上传</button>-->
+        <input type="file" name="files" id="files" class="m-wrap small" value="" placeholder="选择文件"  multiple="multiple" style="width:90% !important;"/>
+    </div>
+    <!--<form id="form1" action="/manage/material/save" method="post" enctype="multipart/form-data">-->
+        <!--<input type="file" name="file" id="file" class="m-wrap small" value="" placeholder="选择文件"  multiple="multiple" style="width:90% !important;"/>-->
+        <!--<button class="btn btn-info" type="submit">上传</button>-->
+    <!--</form>-->
+</form>
+</div>
+#parse("include/footer.html")
+<script src="${rc.contextPath}/statics/plugins/webuploader/webuploader.js"></script>
+<script src="${rc.contextPath}/statics/js/manage/material/add.js"></script>
+</body>
+</html>

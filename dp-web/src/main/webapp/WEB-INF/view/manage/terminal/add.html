@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加终端</title>
+
+    #parse("include/header.html")
+<body>
+</head>
+<div id="add" class="container-fluid">
+    <table class="form" id="form">
+        <tr>
+            <td class="formTitle">终端标识码<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" v-model="terminal.terminalId" class="form-control" placeholder="终端标识码：如5a:7a:d6:a5:25:3c"  isvalid="yes" checkexpession="LenStr" length="25">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">终端名称<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" v-model="terminal.terminalName" class="form-control" placeholder="终端名称"  isvalid="yes" checkexpession="LenStr" length="15">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">终端分组<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text"  class="form-control pointer"   isvalid="yes" checkexpession="NotNull" v-model="terminal.classifyName" @click="classifyTree" readonly="readonly" placeholder="终端分组">
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">备注<font face="宋体">*</font></td>
+            <td class="formValue">
+                <input type="text" v-model="terminal.remark" class="form-control" placeholder="终端描述"  isvalid="yes" checkexpession="LenStrOrNull" length="25">
+            </td>
+        </tr>
+    </table>
+</div>
+#parse("include/footer.html")
+<script src="${rc.contextPath}/statics/js/manage/terminal/add.js"></script>
+</body>
+</html>
